@@ -1,4 +1,4 @@
-# Use Redpanda with Kafka Client Libraries
+# Python code Example
 
 
 ## Prepare the client environment
