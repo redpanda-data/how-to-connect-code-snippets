@@ -1,4 +1,4 @@
-# Python code Example
+# Python code example
 
 
 ## Prepare the client environment
