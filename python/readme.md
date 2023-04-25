@@ -19,11 +19,11 @@ source .env/bin/activate
 
 
 ## Get credentials
-Note the username and password for the user to authenticate with. Go to the [Security section](../acls) to view existing users or create new users. If creating a new user you must create ACLs to allow ... *what permissions are needed?*
+Note the username and password for the user to authenticate with. Go to the [Security section](../acls) to view existing users or create new users. When you create a new user, you must create ACLs to allow ... *what permissions are needed?*
 
 
 ## Create a topic
-Create a file named admin.py and paste the code below. Update the username and password fields.
+Create a file named admin.py and paste the code below. For the username and password fields, replace the placeholder text with your actual username and password.
 
 ```python title="admin.py"
 from kafka import KafkaAdminClient
@@ -50,7 +50,7 @@ finally:
 
 
 ## Create a producer to send messages
-Create a file named producer.py and paste the code below. Update the username and password fields.
+Create a file named producer.py and paste the code below. For the username and password fields, replace the placeholder text with your actual username and password.
 
 ```python title="producer.py"
 import socket
@@ -79,7 +79,7 @@ producer.flush()
 
 
 ## Create a consumer to read data from the topic
-Create a file named consumer.py and paste the code below. Update the username and password fields.
+Create a file named consumer.py and paste the code below. For the username and password fields, replace the placeholder text with your actual username and password.
 
 ```python title="consumer.py"
 from kafka import KafkaConsumer
@@ -110,6 +110,6 @@ for message in consumer:
 (.env) python3 admin.py
 # Produce some data
 (.env) python3 producer.py
-# Consume it back
+# Consume the data
 (.env) python3 consumer.py
 ```
