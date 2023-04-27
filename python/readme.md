@@ -18,8 +18,7 @@ source .env/bin/activate
 
 
 ## Get credentials
-
-Note the username and password to use for client authentication. Go to the [Security](../acls) page to create a new user, or view existing users. If creating a new user, make sure to create the necessary ACLs for managing a topic named `python-demo-topic` and a consumer group named `python-demo-group`.
+Note the username and password for the user to authenticate with. Go to the [Security section](../acls) to view existing users or create new users. Ensure that the user has ACLs to create, read and write to a topic named `python-demo-topic`.
 
 
 ## Create a topic
@@ -50,7 +49,7 @@ finally:
 
 
 ## Create a producer to send messages
-Create a file named `producer.py` and copy and paste the code below. Change the username and password fields as necessary:
+Create a file named producer.py and paste the code below. In the username and password fields, replace the placeholder text with your actual username and password.
 
 ```python title="producer.py"
 import socket
@@ -136,6 +135,6 @@ for message in consumer:
 (.env) python3 admin.py
 # Produce some data
 (.env) python3 producer.py
-# Consume it back
+# Consume the data
 (.env) python3 consumer.py
 ```
