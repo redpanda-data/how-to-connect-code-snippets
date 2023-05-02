@@ -1,4 +1,4 @@
-# Python Code Example
+# Python code example
 
 
 ## Prepare the client environment
@@ -18,11 +18,11 @@ source .env/bin/activate
 
 
 ## Get credentials
-Note the username and password for the user to authenticate with. Go to the [Security section](../acls) to view existing users or create new users. Ensure that the user has ACLs to create, read and write to a topic named `python-demo-topic`.
+Note the username and password for the user to authenticate with. Go to the [Security section](../acls) to view existing users or create new users. Ensure that the user has ACLs to create, read and write to a topic named `demo-topic`.
 
 
 ## Create a topic
-Create a file named `admin.py` and copy and paste the code below. Change the username and password fields as necessary:
+Create a file named `admin.py` and copy and paste the code below. Change the sasl_mechanism, username and password fields as necessary:
 
 ```python title="admin.py"
 from kafka import KafkaAdminClient
@@ -30,15 +30,15 @@ from kafka.admin import NewTopic
 from kafka.errors import TopicAlreadyExistsError
 
 admin = KafkaAdminClient(
-  bootstrap_servers="<auto insert bootstrap server>",
+  bootstrap_servers="<bootstrap-server-address>",
   security_protocol="SASL_SSL",
-  sasl_mechanism="SCRAM-SHA-256",
-  sasl_plain_username="<insert your username>",
-  sasl_plain_password="<insert your password>",
+  sasl_mechanism="<SCRAM-SHA-256 or SCRAM-SHA-512>",
+  sasl_plain_username="<username>",
+  sasl_plain_password="<password>",
 )
 
 try:
-  topic = NewTopic(name="python-demo-topic", num_partitions=1, replication_factor=1)
+  topic = NewTopic(name="demo-topic", num_partitions=1, replication_factor=1)
   admin.create_topics(new_topics=[topic])
   print("Created topic")
 except TopicAlreadyExistsError as e:
@@ -49,7 +49,7 @@ finally:
 
 
 ## Create a producer to send messages
-Create a file named producer.py and paste the code below. In the username and password fields, replace the placeholder text with your actual username and password.
+Create a file named `producer.py` and copy and paste the code below. Change the sasl_mechanism, username and password fields as necessary:
 
 ```python title="producer.py"
 import socket
@@ -57,11 +57,11 @@ from kafka import KafkaProducer
 from kafka.errors import KafkaError
 
 producer = KafkaProducer(
-  bootstrap_servers="<auto insert bootstrap server>",
+  bootstrap_servers="<bootstrap-server-address>",
   security_protocol="SASL_SSL",
-  sasl_mechanism="SCRAM-SHA-256",
-  sasl_plain_username="<insert your username>",
-  sasl_plain_password="<insert your password>",
+  sasl_mechanism="<SCRAM-SHA-256 or SCRAM-SHA-512>",
+  sasl_plain_username="<username>",
+  sasl_plain_password="<password>",
 )
 hostname = str.encode(socket.gethostname())
 
@@ -75,51 +75,34 @@ def on_error(e):
 for i in range(100):
   msg = f"asynchronous message #{i}"
   future = producer.send(
-    "python-demo-topic",
+    "demo-topic",
     key=hostname,
     value=str.encode(msg)
   )
   future.add_callback(on_success)
   future.add_errback(on_error)
 producer.flush()
-
-# Produce 100 messages synchronously
-for i in range(100, 200):
-  msg = f"synchronous message #{i}"
-  future = producer.send(
-    "python-demo-topic",
-    key=hostname,
-    value=str.encode(msg)
-  )
-  try:
-    metadata = future.get(timeout=5)
-    print(f"Sent to topic '{metadata.topic}' at offset {metadata.offset}")
-  except KafkaError as e:
-    print(f"Error sending message: {e}")
-    pass
-producer.flush()
 producer.close()
 ```
 
 
 ## Create a consumer to read data from the topic
-Create a file named `consumer.py` and copy and paste the code below. Change the username and password fields as necessary:
+Create a file named `consumer.py` and copy and paste the code below. Change the sasl, username and password fields as necessary:
 
 ```python title="consumer.py"
 from kafka import KafkaConsumer
 
 consumer = KafkaConsumer(
-  bootstrap_servers="<auto insert bootstrap server>",
+  bootstrap_servers="<bootstrap-server-address>",
   security_protocol="SASL_SSL",
-  sasl_mechanism="SCRAM-SHA-256",
-  sasl_plain_username="<insert your username>",
-  sasl_plain_password="<insert your password>",
-  group_id="python-demo-group",
+  sasl_mechanism="<SCRAM-SHA-256 or SCRAM-SHA-512>",
+  sasl_plain_username="<username>",
+  sasl_plain_password="<password>",
   auto_offset_reset="earliest",
   enable_auto_commit=False,
   consumer_timeout_ms=10000
 )
-consumer.subscribe("python-demo-topic")
+consumer.subscribe("demo-topic")
 
 for message in consumer:
   topic_info = f"topic: {message.topic} ({message.partition}|{message.offset})"
