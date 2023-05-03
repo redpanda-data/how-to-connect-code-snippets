@@ -3,8 +3,7 @@
 
 ## Prepare the client environment
 
-Download and install Node.js [here](https://nodejs.org/en/download).
-This example uses the [KafkaJS](https://kafka.js.org/) library.
+Download and install Node.js [here](https://nodejs.org/en/download). This example uses the [KafkaJS](https://kafka.js.org/) library.
 
 ```bash
 # Create and enter the project folder
@@ -21,24 +20,22 @@ tsc --init
 
 
 ## Get credentials
-
-Note the username and password to use for client authentication. Go to the [Security](../acls) page to create a new user, or view existing users. If creating a new user, make sure to create the necessary ACLs for managing a topic named `python-demo-topic` and a consumer group named `python-demo-group`.
+Note the username, password and SASL mechanism for the user to authenticate with. Go to the [Security section](../acls) to view existing users or create new users. Ensure that the user has ACLs to create, read and write to a topic named `demo-topic`.
 
 
 ## Create a topic
-
-Create a file named `admin.ts` and copy and paste the code below. Change the username and password fields as necessary:
+Create a file named `admin.ts` and copy and paste the code below. Change the sasl mechanism, username and password fields as necessary:
 
 ```javascript title="admin.ts"
 const {Kafka} = require("kafkajs")
 
 const redpanda = new Kafka({
-  brokers: ["<auto insert bootstrap server>"],
+  brokers: ["<bootstrap-server-address>"],
   ssl: {},
   sasl: {
-    mechanism: "scram-sha-256",
-    username: "<insert your username>",
-    password: "<insert your password>"
+    mechanism: "<scram-sha-256 or scram-sha-512>",
+    username: "<username>",
+    password: "<password>"
   }
 })
 const admin = redpanda.admin()
@@ -46,7 +43,7 @@ const admin = redpanda.admin()
 admin.connect().then(() => {
   admin.createTopics({
     topics: [{
-      topic: "python-demo-topic",
+      topic: "demo-topic",
       numPartitions: 1,
       replicationFactor: 1
     }]
@@ -63,26 +60,26 @@ admin.connect().then(() => {
 
 ## Create a producer to send messages
 
-Create a file named `producer.ts` and copy and paste the code below. Change the username and password fields as necessary:
+Create a file named `producer.ts` and paste the code below. Change the sasl mechanism, username and password fields as necessary:
 
 ```javascript title="producer.ts"
 const os = require("os")
 const {Kafka, CompressionTypes} = require("kafkajs")
 
 const redpanda = new Kafka({
-  brokers: ["<auto insert bootstrap server>"],
+  brokers: ["<bootstrap-server-address>"],
   ssl: {},
   sasl: {
-    mechanism: "scram-sha-256",
-    username: "<insert your username>",
-    password: "<insert your password>"
+    mechanism: "<scram-sha-256 or scram-sha-512>",
+    username: "<username>",
+    password: "<password>"
   }
 })
 const producer = redpanda.producer()
 
 const sendMessage = (msg: string) => {
   return producer.send({
-    topic: "python-demo-topic",
+    topic: "demo-topic",
     compression: CompressionTypes.GZIP,
     messages: [{
       // Messages with the same key are sent to the same topic partition for
@@ -120,26 +117,26 @@ process.once("SIGINT", async () => {
 
 ## Create a consumer to read data from the topic
 
-Create a file named `consumer.ts` and copy and paste the code below. Change the username and password fields as necessary:
+Create a file named `consumer.ts` and copy and paste the code below. Change the sasl mechanism, username and password fields as necessary:
 
 ```javascript title="consumer.ts"
 const {Kafka} = require("kafkajs")
 
 const redpanda = new Kafka({
-  brokers: ["<auto insert bootstrap server>"],
+  brokers: ["<bootstrap-server-address>"],
   ssl: {},
   sasl: {
-    mechanism: "scram-sha-256",
-    username: "<insert your username>",
-    password: "<insert your password>"
+    mechanism: "<scram-sha-256 or scram-sha-512>",
+    username: "<username>",
+    password: "<password>"
   }
 })
-const consumer = redpanda.consumer({groupId: "python-demo-group"})
+const consumer = redpanda.consumer()
 
 const run = async () => {
   await consumer.connect()
   await consumer.subscribe({
-    topic: "python-demo-topic",
+    topic: "demo-topic",
     fromBeginning: true
   })
   await consumer.run({

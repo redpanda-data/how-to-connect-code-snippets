@@ -19,13 +19,13 @@ go get github.com/twmb/franz-go/pkg/sasl/scram@v1.9.0
 
 
 ## Get credentials
-Note the username and password for the user to authenticate with. Go to the [Security section](../acls) to view existing users or create new users. Ensure that the user has ACLs to create, read and write to a topic named `demo-topic`.
+Note the username, password and SASL mechanism for the user to authenticate with. Go to the [Security section](../acls) to view existing users or create new users. Ensure that the user has ACLs to create, read and write to a topic named `demo-topic`.
 
 
 ## Create a topic
-Create a file named `admin.go` and copy and paste the code below. Change the sasl_mechanism, username and password fields as necessary:
+Create a file named `admin.go` and paste the code below. In the username and password fields, replace the placeholder text with the actual values. Use the SCRAM mechanism that matches the user to authenticate with.
 
-```go title="admin.g0"
+```go title="admin.go"
 package main
 
 import (
@@ -90,7 +90,7 @@ func main() {
 
 
 ## Create a producer to send messages
-Create a file named `producer.go` and copy and paste the code below. Change the sasl_mechanism, username and password fields as necessary:
+Create a file named `producer.go` and paste the code below. In the username and password fields, replace the placeholder text with the actual values. Use the SCRAM mechanism that matches the user to authenticate with.
 
 ```go title="producer.go"
 package main
@@ -166,7 +166,7 @@ func main() {
 
 
 ## Create a consumer to read data from the topic
-Create a file named `consumer.go` and copy and paste the code below. Change the sasl, username and password fields as necessary:
+Create a file named `consumer.go` and paste the code below. In the username and password fields, replace the placeholder text with the actual values. Use the SCRAM mechanism that matches the user to authenticate with.
 
 ```go title="consumer.go"
 package main

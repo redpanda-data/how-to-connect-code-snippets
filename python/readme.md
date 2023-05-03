@@ -18,11 +18,11 @@ source .env/bin/activate
 
 
 ## Get credentials
-Note the username and password for the user to authenticate with. Go to the [Security section](../acls) to view existing users or create new users. Ensure that the user has ACLs to create, read and write to a topic named `demo-topic`.
+Note the username, password and SASL mechanism for the user to authenticate with. Go to the [Security section](../acls) to view existing users or create new users. Ensure that the user has ACLs to create, read and write to a topic named `demo-topic`.
 
 
 ## Create a topic
-Create a file named `admin.py` and copy and paste the code below. Change the sasl_mechanism, username and password fields as necessary:
+Create a file named `admin.py` and paste the code below. In the username, password and sasl_mechanism fields, replace the placeholder text with the actual values.
 
 ```python title="admin.py"
 from kafka import KafkaAdminClient
@@ -49,7 +49,7 @@ finally:
 
 
 ## Create a producer to send messages
-Create a file named `producer.py` and copy and paste the code below. Change the sasl_mechanism, username and password fields as necessary:
+Create a file named `producer.py` and paste the code below. In the username, password and sasl_mechanism fields, replace the placeholder text with the actual values.
 
 ```python title="producer.py"
 import socket
@@ -87,7 +87,7 @@ producer.close()
 
 
 ## Create a consumer to read data from the topic
-Create a file named `consumer.py` and copy and paste the code below. Change the sasl, username and password fields as necessary:
+Create a file named `consumer.py` and paste the code below. In the username, password and sasl_mechanism fields, replace the placeholder text with the actual values.
 
 ```python title="consumer.py"
 from kafka import KafkaConsumer
