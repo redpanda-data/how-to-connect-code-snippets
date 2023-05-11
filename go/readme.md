@@ -184,7 +184,7 @@ func main() {
 	topic := "demo-topic"
 	ctx := context.Background()
 
-	seeds := []string{"<bootstrap-server-address"}
+	seeds := []string{"<bootstrap-server-address>"}
 	opts := []kgo.Opt{}
 	opts = append(opts,
 		kgo.SeedBrokers(seeds...),
