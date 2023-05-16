@@ -20,7 +20,7 @@ tsc --init
 
 
 ## Get credentials
-Note the username, password and SASL mechanism for the user to authenticate with. Go to the [Security section](../acls) to view existing users or create new users. Ensure that the user has ACLs to create, read and write to a topic named `demo-topic`.
+Note the username, password and SASL mechanism for the user to authenticate with. Go to the [Security section](acls) to view existing users or create new users. Ensure that the user has ACLs to create, read and write to a topic named `demo-topic`.
 
 
 ## Create a topic
