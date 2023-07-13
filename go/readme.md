@@ -73,7 +73,7 @@ func main() {
 
 	ctx := context.Background()
 	// Create a topic with a single partition and single replica
-	resp, err := admin.CreateTopics(ctx, 1, 1, nil, topic)
+	resp, err := admin.CreateTopics(ctx, 1, -1, nil, topic)
 	if err != nil {
 		panic(err)
 	}
