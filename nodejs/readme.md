@@ -45,7 +45,7 @@ admin.connect().then(() => {
     topics: [{
       topic: "demo-topic",
       numPartitions: 1,
-      replicationFactor: 1
+      replicationFactor: -1
     }]
   })
   .then((resp: any) => {

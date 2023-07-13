@@ -38,7 +38,7 @@ admin = KafkaAdminClient(
 )
 
 try:
-  topic = NewTopic(name="demo-topic", num_partitions=1, replication_factor=1)
+  topic = NewTopic(name="demo-topic", num_partitions=1, replication_factor=-1, replica_assignments=[])
   admin.create_topics(new_topics=[topic])
   print("Created topic")
 except TopicAlreadyExistsError as e:
