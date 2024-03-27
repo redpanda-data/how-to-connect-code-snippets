@@ -18,7 +18,7 @@ cat > pom.xml <<EOF
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.example</groupId>
-    <artifactId>serverless-client</artifactId>
+    <artifactId>redpanda-client</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <properties>
