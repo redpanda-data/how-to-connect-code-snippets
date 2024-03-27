@@ -18,13 +18,13 @@ cat > pom.xml <<EOF
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.example</groupId>
-    <artifactId>redpanda-client</artifactId>
+    <artifactId>serverless-client</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <properties>
-        <!-- works with Java 8 onwards -->
-        <maven.compiler.source>21</maven.compiler.source>
-        <maven.compiler.target>21</maven.compiler.target>
+        <!-- 8 or later, eg, 21 is a recent LTS version -->
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <dependencies>
@@ -33,28 +33,40 @@ cat > pom.xml <<EOF
             <artifactId>kafka-clients</artifactId>
             <version>3.6.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <!-- use slf4j-simple instead to enable client logging -->
+            <artifactId>slf4j-nop</artifactId>
+            <version>2.0.12</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>2.0.12</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
-            <plugin> <!-- Include dependencies with the jar file -->
-                <artifactId>maven-assembly-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <mainClass>org.example.Main</mainClass>
-                        </manifest>
-                    </archive>
-                    <descriptorRefs>
-                        <descriptorRef>jar-with-dependencies</descriptorRef>
-                    </descriptorRefs>
-                </configuration>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.5.1</version>
                 <executions>
                     <execution>
-                        <id>make-assembly</id>
                         <phase>package</phase>
                         <goals>
-                            <goal>single</goal>
+                            <goal>shade</goal>
                         </goals>
+                        <configuration>
+                            <artifactSet/>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>org.example.Main</mainClass>
+                                </transformer>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                            </transformers>
+                            <outputFile>${project.build.directory}/${project.artifactId}-${project.version}-shaded.jar</outputFile>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -115,11 +127,12 @@ public class Main {
             adminClient.createTopics(Collections.singleton(new NewTopic(topicName, Optional.of(1), Optional.empty())))
                     .all()
                     .get();
+            System.out.println("Created topic");
         } catch (ExecutionException | InterruptedException e) {
             if (!(e.getCause() instanceof TopicExistsException)) {
                 throw e;
             }
-            System.out.println("topic already exists");
+            System.out.println("Topic already exists");
         }
     }
 }
@@ -129,7 +142,7 @@ public class Main {
 ## Create a producer to send messages
 Create a file named `src/main/java/org/example/Producer.java` and paste the code below.
 
-```java title="Main.java"
+```java title="Producer.java"
 package org.example;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
@@ -144,7 +157,7 @@ public class Producer {
 
     public static void produce(String topicName) {
         try (org.apache.kafka.clients.producer.Producer<Void, String> producer = new KafkaProducer<>(Main.clientProperties())) {
-            for (var i = 0; i < 100; i++) {
+            for (int i = 0; i < 100; i++) {
                 ProducerRecord<Void, String> record = new ProducerRecord<>(topicName, String.format("asynchronous message #%d", i));
                 producer.send(record, (r, e) -> {
                     if (e == null) {
@@ -153,7 +166,6 @@ public class Producer {
                         System.out.println("Error sending message: " + e);
                     }
                 });
-
             }
         }
     }
@@ -179,10 +191,10 @@ public class Consumer {
     }
 
     public static void consume(String topicName) {
-        var props = Main.clientProperties();
+        Properties props = Main.clientProperties();
         props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
         try (org.apache.kafka.clients.consumer.Consumer<String, String> consumer = new KafkaConsumer<>(props)) {
-            var topicPartitions = Collections.singleton(new TopicPartition(topicName, 0));
+            Set<TopicPartition> topicPartitions = Collections.singleton(new TopicPartition(topicName, 0));
             consumer.assign(topicPartitions);
             consumer.seekToBeginning(topicPartitions);
             while (true) {
@@ -206,9 +218,9 @@ public class Consumer {
 # Produce the executable jar file
 mvn package
 # Create the topic
-java -jar target/redpanda-client-1.0-SNAPSHOT-jar-with-dependencies.jar
+java -jar target/redpanda-client-1.0-SNAPSHOT-shaded.jar
 # Produce some data
-java -cp target/redpanda-client-1.0-SNAPSHOT-jar-with-dependencies.jar org.example.Producer
+java -cp target/redpanda-client-1.0-SNAPSHOT-shaded.jar org.example.Producer
 # Consume it back
-java -cp target/redpanda-client-1.0-SNAPSHOT-jar-with-dependencies.jar org.example.Consumer
+java -cp target/redpanda-client-1.0-SNAPSHOT-shaded.jar org.example.Consumer
 ```
