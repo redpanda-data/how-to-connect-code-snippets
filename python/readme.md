@@ -1,6 +1,5 @@
 # Python code example
 
-
 ## Prepare the client environment
 
 Download and install Python 3 from [python.org](https://www.python.org/downloads). This example uses the [kafka-python](https://kafka-python.readthedocs.io/en/master/) library.
@@ -12,16 +11,16 @@ mkdir redpanda-python; cd redpanda-python
 python3 -m venv .env
 source .env/bin/activate
 # Install dependencies
-(.env) pip install --upgrade pip
-(.env) pip install kafka-python
+pip install --upgrade pip
+pip install kafka-python
 ```
 
-
 ## Get credentials
+
 Note the username, password and SASL mechanism for the user to authenticate with. Go to the [Security section](acls) to view existing users or create new users. Ensure that the user has ACLs to create, read and write to a topic named `demo-topic`.
 
-
 ## Create a topic
+
 Create a file named `admin.py` and paste the code below. In the username, password and sasl_mechanism fields, replace the placeholder text with the actual values.
 
 ```python title="admin.py"
@@ -47,8 +46,8 @@ finally:
   admin.close()
 ```
 
-
 ## Create a producer to send messages
+
 Create a file named `producer.py` and paste the code below. In the username, password and sasl_mechanism fields, replace the placeholder text with the actual values.
 
 ```python title="producer.py"
@@ -85,8 +84,8 @@ producer.flush()
 producer.close()
 ```
 
-
 ## Create a consumer to read data from the topic
+
 Create a file named `consumer.py` and paste the code below. In the username, password and sasl_mechanism fields, replace the placeholder text with the actual values.
 
 ```python title="consumer.py"
@@ -110,14 +109,13 @@ for message in consumer:
   print(f"{topic_info}, {message_info}")
 ```
 
-
 ## Run scripts
 
 ```bash
 # Create the topic
-(.env) python3 admin.py
+python3 admin.py
 # Produce some data
-(.env) python3 producer.py
+python3 producer.py
 # Consume the data
-(.env) python3 consumer.py
+python3 consumer.py
 ```
