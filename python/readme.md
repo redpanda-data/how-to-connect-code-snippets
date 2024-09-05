@@ -12,7 +12,7 @@ python3 -m venv .env
 source .env/bin/activate
 # Install dependencies
 pip install --upgrade pip
-pip install kafka-python
+pip install kafka-python-ng
 ```
 
 ## Get credentials
