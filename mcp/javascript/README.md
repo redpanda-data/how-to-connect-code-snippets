@@ -2,7 +2,7 @@
 
 In package.json add dependencies:
 
-```
+```json
 {
   "name": "remote-mcp-javascript-example",
   "version": "1.0.0",

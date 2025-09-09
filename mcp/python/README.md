@@ -1,8 +1,8 @@
 ## Dependencies
 
-In pyproject.yaml add dependencies:
+In pyproject.toml add dependencies:
 
-```
+```toml
 [project]
 name = "remote-mcp-example"
 version = "0.1.0"
