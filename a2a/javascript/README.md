@@ -50,7 +50,19 @@ async function getOAuthToken() {
   return token.access_token;
 }
 
-// Define an interceptor to add Authorization header
+// Create custom fetch that adds auth headers
+function createAuthenticatedFetch(accessToken) {
+  return async (url, init) => {
+    const headers = new Headers(init?.headers);
+    headers.set('Authorization', `Bearer ${accessToken}`);
+    headers.set('X-Redpanda-Stream-Tokens', 'true');
+
+    const newInit = { ...init, headers };
+    return fetch(url, newInit);
+  };
+}
+
+// Define an interceptor to add Authorization header for API calls
 class AuthInterceptor {
   constructor(token) {
     this.token = token;
@@ -79,18 +91,40 @@ async function main() {
   // Get OAuth token
   const accessToken = await getOAuthToken();
 
-  // Fetch agent card (public, no auth needed)
-  const cardResponse = await fetch(`${agentUrl}/.well-known/agent-card.json`);
-  const agentCard = await cardResponse.json();
+  // Create authenticated fetch for agent card resolution
+  const authenticatedFetch = createAuthenticatedFetch(accessToken);
 
   // Create A2A client with authentication
   const options = ClientFactoryOptions.createFrom(ClientFactoryOptions.default, {
     clientConfig: {
       interceptors: [new AuthInterceptor(accessToken)],
     },
+    cardResolver: {
+      resolve: async (baseUrl) => {
+        const urls = [
+          `${baseUrl}/.well-known/agent-card.json`,
+          `${baseUrl}/.well-known/agent.json`
+        ];
+
+        for (let i = 0; i < urls.length; i++) {
+          const url = urls[i];
+          try {
+            const response = await authenticatedFetch(url, {});
+            if (response.ok) {
+              return await response.json();
+            }
+          } catch (error) {
+            if (i === urls.length - 1) {
+              throw new Error(`Failed to fetch agent card from ${baseUrl}: ${error.message}`);
+            }
+          }
+        }
+      }
+    }
   });
+
   const factory = new ClientFactory(options);
-  const client = await factory.createFromAgentCard(agentCard);
+  const client = await factory.createFromUrl(agentUrl, '');
 
   // Send message
   const response = await client.sendMessage({
