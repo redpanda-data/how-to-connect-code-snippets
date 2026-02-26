@@ -21,7 +21,7 @@ In package.json add dependencies:
 Simple example to send a message to a Redpanda AI Agent using the A2A protocol.
 
 ```javascript
-import { A2AClient } from '@a2a-js/sdk';
+import { ClientFactory, ClientFactoryOptions } from '@a2a-js/sdk/client';
 
 // Load config
 const agentUrl = '<agent-url>';
@@ -50,6 +50,39 @@ async function getOAuthToken() {
   return token.access_token;
 }
 
+// Create custom fetch that adds auth headers
+function createAuthenticatedFetch(accessToken) {
+  return async (url, init) => {
+    const headers = new Headers(init?.headers);
+    headers.set('Authorization', `Bearer ${accessToken}`);
+    headers.set('X-Redpanda-Stream-Tokens', 'true');
+
+    const newInit = { ...init, headers };
+    return fetch(url, newInit);
+  };
+}
+
+// Define an interceptor to add Authorization header for API calls
+class AuthInterceptor {
+  constructor(token) {
+    this.token = token;
+  }
+
+  async before(args) {
+    args.options = {
+      ...args.options,
+      serviceParameters: {
+        ...args.options?.serviceParameters,
+        'Authorization': `Bearer ${this.token}`,
+      },
+    };
+  }
+
+  async after() {
+    // No-op
+  }
+}
+
 async function main() {
   if (!clientId || !clientSecret) {
     throw new Error('REDPANDA_CLOUD_CLIENT_ID and REDPANDA_CLOUD_CLIENT_SECRET must be set');
@@ -58,21 +91,52 @@ async function main() {
   // Get OAuth token
   const accessToken = await getOAuthToken();
 
-  // Create A2A client from agent URL
-  const client = await A2AClient.createFromUrl(agentUrl, {
-    headers: { 'Authorization': `Bearer ${accessToken}` }
+  // Create authenticated fetch for agent card resolution
+  const authenticatedFetch = createAuthenticatedFetch(accessToken);
+
+  // Create A2A client with authentication
+  const options = ClientFactoryOptions.createFrom(ClientFactoryOptions.default, {
+    clientConfig: {
+      interceptors: [new AuthInterceptor(accessToken)],
+    },
+    cardResolver: {
+      resolve: async (baseUrl) => {
+        const urls = [
+          `${baseUrl}/.well-known/agent-card.json`,
+          `${baseUrl}/.well-known/agent.json`
+        ];
+
+        for (let i = 0; i < urls.length; i++) {
+          const url = urls[i];
+          try {
+            const response = await authenticatedFetch(url, {});
+            if (response.ok) {
+              return await response.json();
+            }
+          } catch (error) {
+            if (i === urls.length - 1) {
+              throw new Error(`Failed to fetch agent card from ${baseUrl}: ${error.message}`);
+            }
+          }
+        }
+      }
+    }
   });
+
+  const factory = new ClientFactory(options);
+  const client = await factory.createFromUrl(agentUrl, '');
 
   // Send message
   const response = await client.sendMessage({
     message: {
       role: 'user',
       parts: [{ kind: 'text', text: 'What can you help me with?' }],
-      messageId: crypto.randomUUID()
-    }
+      messageId: crypto.randomUUID(),
+      kind: 'message',
+    },
   });
 
-  console.log('Response:', response.result);
+  console.log('Response:', response);
 }
 
 main().catch(console.error);
