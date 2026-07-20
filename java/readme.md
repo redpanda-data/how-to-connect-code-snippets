@@ -1,9 +1,8 @@
 # Java code example
 
-
 ## Prepare the client environment
 
-Download and install a JDK, for example from [openjdk.org](https://openjdk.org/projects/jdk/21/) and Maven from [maven.apache.org](https://maven.apache.org/download.cgi). This example uses the [Apache Kafka](https://github.com/apache/kafka) client library at version 3.6.0.
+Install a JDK (for example, from [openjdk.org](https://openjdk.org/projects/jdk/21/)) and Maven (from [maven.apache.org](https://maven.apache.org/download.cgi)). This example uses the [Apache Kafka](https://github.com/apache/kafka) client library version 3.6.0.
 
 ```bash
 # Create and enter the project folder
@@ -76,13 +75,13 @@ cat > pom.xml <<EOF
 EOF
 ```
 
-
 ## Get credentials
-Note the username, password and SASL mechanism for the user to authenticate with. Go to the [Security section](acls) to view existing users or create new users. Ensure that the user has ACLs to create, read and write to a topic named `demo-topic`.
 
+Note the username, password, and SASL mechanism the user needs to authenticate. To view existing users or create new ones, go to the [Security section](acls). Make sure the user has ACLs to create, read, and write to a topic named `demo-topic`.
 
 ## Create a topic
-Create a file named `src/main/java/org/example/Main.java` and paste the code below. In the username and password fields, replace the placeholder text with the actual values. Use the SCRAM mechanism that matches the user to authenticate with.
+
+Create a file named `src/main/java/org/example/Main.java` and paste in the following code. In the username and password fields, replace the placeholder text with your actual values. Use the SCRAM mechanism that matches the user's credentials.
 
 ```java title="Main.java"
 package org.example;
@@ -138,9 +137,9 @@ public class Main {
 }
 ```
 
-
 ## Create a producer to send messages
-Create a file named `src/main/java/org/example/Producer.java` and paste the code below.
+
+Create a file named `src/main/java/org/example/Producer.java` and paste in the following code.
 
 ```java title="Producer.java"
 package org.example;
@@ -172,9 +171,9 @@ public class Producer {
 }
 ```
 
-
 ## Create a consumer to read data from the topic
-Create a file named `src/main/java/org/example/Consumer.java` and paste the code below. Note that the consumer requires slightly more configuration than the producer.
+
+Create a file named `src/main/java/org/example/Consumer.java` and paste in the following code. The consumer requires slightly more configuration than the producer.
 
 ```java title="Consumer.java"
 package org.example;
@@ -210,7 +209,6 @@ public class Consumer {
     }
 }
 ```
-
 
 ## Build and run
 
