@@ -2,7 +2,7 @@
 
 ## Prepare the client environment
 
-Download and install Python 3 from [python.org](https://www.python.org/downloads). This example uses the [kafka-python](https://kafka-python.readthedocs.io/en/master/) library.
+Install Python 3 from [python.org](https://www.python.org/downloads). This example uses the [kafka-python](https://kafka-python.readthedocs.io/en/master/) library.
 
 ```bash
 # Create and enter the project folder
@@ -17,11 +17,11 @@ pip install kafka-python-ng
 
 ## Get credentials
 
-Note the username, password and SASL mechanism for the user to authenticate with. Go to the [Security section](acls) to view existing users or create new users. Ensure that the user has ACLs to create, read and write to a topic named `demo-topic`.
+Note the username, password, and SASL mechanism the user needs to authenticate. To view existing users or create new ones, go to the [Security section](acls). Make sure the user has ACLs to create, read, and write to a topic named `demo-topic`.
 
 ## Create a topic
 
-Create a file named `admin.py` and paste the code below. In the username, password and sasl_mechanism fields, replace the placeholder text with the actual values.
+Create a file named `admin.py` and paste in the following code. In the username, password, and sasl_mechanism fields, replace the placeholder text with your actual values.
 
 ```python title="admin.py"
 from kafka import KafkaAdminClient
@@ -48,7 +48,7 @@ finally:
 
 ## Create a producer to send messages
 
-Create a file named `producer.py` and paste the code below. In the username, password and sasl_mechanism fields, replace the placeholder text with the actual values.
+Create a file named `producer.py` and paste in the following code. In the username, password, and sasl_mechanism fields, replace the placeholder text with your actual values.
 
 ```python title="producer.py"
 import socket
@@ -86,7 +86,7 @@ producer.close()
 
 ## Create a consumer to read data from the topic
 
-Create a file named `consumer.py` and paste the code below. In the username, password and sasl_mechanism fields, replace the placeholder text with the actual values.
+Create a file named `consumer.py` and paste in the following code. In the username, password, and sasl_mechanism fields, replace the placeholder text with your actual values.
 
 ```python title="consumer.py"
 from kafka import KafkaConsumer

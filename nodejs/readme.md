@@ -1,9 +1,8 @@
 # Node.js code example
 
-
 ## Prepare the client environment
 
-Download and install Node.js [here](https://nodejs.org/en/download). This example uses the [KafkaJS](https://kafka.js.org/) library.
+Install Node.js from [nodejs.org](https://nodejs.org/en/download). This example uses the [KafkaJS](https://kafka.js.org/) library.
 
 ```bash
 # Create and enter the project folder
@@ -18,13 +17,13 @@ npm i kafkajs
 tsc --init
 ```
 
-
 ## Get credentials
-Note the username, password and SASL mechanism for the user to authenticate with. Go to the [Security section](acls) to view existing users or create new users. Ensure that the user has ACLs to create, read and write to a topic named `demo-topic`.
 
+Note the username, password, and SASL mechanism the user needs to authenticate. To view existing users or create new ones, go to the [Security section](acls). Make sure the user has ACLs to create, read, and write to a topic named `demo-topic`.
 
 ## Create a topic
-Create a file named `admin.ts` and copy and paste the code below. Change the sasl mechanism, username and password fields as necessary:
+
+Create a file named `admin.ts` and paste in the following code. In the username, password, and SASL mechanism fields, replace the placeholder text with your actual values.
 
 ```javascript title="admin.ts"
 const {Kafka} = require("kafkajs")
@@ -57,10 +56,9 @@ admin.connect().then(() => {
 
 ```
 
-
 ## Create a producer to send messages
 
-Create a file named `producer.ts` and paste the code below. Change the sasl mechanism, username and password fields as necessary:
+Create a file named `producer.ts` and paste in the following code. In the username, password, and SASL mechanism fields, replace the placeholder text with your actual values.
 
 ```javascript title="producer.ts"
 const os = require("os")
@@ -114,10 +112,9 @@ process.once("SIGINT", async () => {
 })
 ```
 
-
 ## Create a consumer to read data from the topic
 
-Create a file named `consumer.ts` and copy and paste the code below. Change the sasl mechanism, username and password fields as necessary:
+Create a file named `consumer.ts` and paste in the following code. In the username, password, and SASL mechanism fields, replace the placeholder text with your actual values.
 
 ```javascript title="consumer.ts"
 const {Kafka} = require("kafkajs")
